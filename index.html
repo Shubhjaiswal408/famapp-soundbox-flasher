@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FamApp Soundbox Flasher</title>
+<meta name="description" content="Flash the FamApp Soundbox firmware to an ESP32 straight from your browser.">
+<meta name="color-scheme" content="dark">
+
+<!-- ESP Web Tools (pinned version) -->
+<script type="module" src="https://unpkg.com/esp-web-tools@10.4.0/dist/web/install-button.js?module"></script>
+
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --line: #262d36;
+    --text: #e6edf3;
+    --muted: #9aa5b1;
+    --accent: #2f81f7;
+    --accent-2: #6e56cf;
+    --ok: #3fb950;
+    --warn: #d29922;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  main { max-width: 880px; margin: 0 auto; padding: 48px 16px 32px; }
+
+  header { text-align: center; margin-bottom: 32px; }
+  .badge {
+    display: inline-block; padding: 2px 10px; border: 1px solid var(--line);
+    border-radius: 999px; color: var(--muted); font-size: 13px;
+  }
+  h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.2; margin: 14px 0 8px; font-weight: 650; }
+  .subtitle { color: var(--muted); margin: 0 auto; max-width: 560px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
+  }
+  h2 { font-size: 18px; margin: 0 0 12px; font-weight: 600; }
+  p { margin: 0 0 10px; }
+  .muted { color: var(--muted); font-size: 14px; }
+
+  /* ---- Flash card ---- */
+  .flash { text-align: center; padding: 32px 24px; }
+  .flash p { margin: 14px 0 0; }
+
+  /* The REAL ESP Web Tools trigger (slot="activate"), styled directly. */
+  esp-web-install-button button[slot="activate"] {
+    appearance: none; border: 0; cursor: pointer;
+    padding: 14px 32px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff; font: 600 17px/1 inherit; letter-spacing: .2px;
+    box-shadow: 0 4px 14px rgba(47, 129, 247, .25);
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  }
+  esp-web-install-button button[slot="activate"]:hover {
+    transform: translateY(-1px); filter: brightness(1.08);
+    box-shadow: 0 6px 18px rgba(47, 129, 247, .32);
+  }
+  esp-web-install-button button[slot="activate"]:active { transform: translateY(0); }
+  esp-web-install-button button[slot="activate"]:focus-visible {
+    outline: 2px solid #fff; outline-offset: 3px;
+  }
+
+  .notice {
+    display: block; margin-top: 4px; padding: 12px 16px; border-radius: 10px;
+    border: 1px solid var(--warn); color: var(--warn); font-size: 15px;
+  }
+
+  .btn-secondary {
+    display: inline-block; margin-top: 18px; padding: 10px 20px;
+    border: 1px solid var(--line); border-radius: 10px;
+    color: var(--text); text-decoration: none; font-size: 15px;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .btn-secondary:hover { border-color: var(--accent); background: #1c2330; }
+
+  /* ---- Grid of info cards ---- */
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-bottom: 16px; }
+  .grid .card { margin: 0; }
+
+  ol, ul { margin: 0; padding-left: 20px; }
+  li { margin: 6px 0; }
+  code {
+    background: #0b0f14; border: 1px solid var(--line); border-radius: 6px;
+    padding: 1px 6px; font: 14px ui-monospace, SFMono-Regular, Consolas, monospace;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  td, th { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 500; }
+
+  .warn { border-color: rgba(210, 153, 34, .55); }
+  .warn h2 { color: var(--warn); }
+
+  details { border-top: 1px solid var(--line); padding: 12px 0; }
+  details:first-of-type { border-top: 0; padding-top: 0; }
+  summary { cursor: pointer; font-weight: 550; }
+  details p, details ul { margin-top: 8px; color: var(--muted); }
+
+  footer { text-align: center; color: var(--muted); font-size: 14px; padding: 24px 16px 40px; }
+  footer a { color: var(--text); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <header>
+    <span class="badge">Firmware v1.0.0 &middot; ESP32</span>
+    <h1>FamApp Soundbox</h1>
+    <p class="subtitle">
+      Speaks every FamApp payment out loud and shows the amount on an OLED.
+      Flash it to your ESP32 straight from the browser, with no software to install.
+    </p>
+  </header>
+
+  <!-- Flash -->
+  <section class="card flash">
+    <esp-web-install-button manifest="manifest.json">
+      <button slot="activate">Flash Firmware</button>
+      <span slot="unsupported" class="notice">
+        Your browser can't flash devices. Open this page in <b>Chrome</b> or <b>Edge</b> on a computer.
+      </span>
+      <span slot="not-allowed" class="notice">
+        Flashing needs a secure page. Open it from the <b>https://</b> GitHub Pages address.
+      </span>
+    </esp-web-install-button>
+    <p class="muted">Connect the ESP32 with a USB data cable first. Works in Chrome and Edge on Windows, macOS, Linux and ChromeOS.</p>
+    <a class="btn-secondary" href="https://github.com/Shubhjaiswal408/famapp-soundbox-flasher#readme" target="_blank" rel="noopener">Read the full guide</a>
+  </section>
+
+  <div class="grid">
+    <!-- Board -->
+    <section class="card">
+      <h2>Supported board</h2>
+      <table>
+        <tr><th>Board</th><td>ESP32 Dev Module (classic ESP32, 4&nbsp;MB flash)</td></tr>
+        <tr><th>Chip</th><td>ESP32 (ESP32-D0WD / WROOM-32)</td></tr>
+        <tr><th>Display</th><td>SSD1306 128&times;32 OLED, I2C</td></tr>
+        <tr><th>Audio</th><td>MAX98357A I2S amp + speaker</td></tr>
+      </table>
+      <p class="muted" style="margin-top:10px">Not for ESP32-S3, C3 or C6 boards.</p>
+    </section>
+
+    <!-- Wiring -->
+    <section class="card">
+      <h2>Wiring</h2>
+      <table>
+        <tr><th>OLED SDA / SCL</th><td>GPIO 21 / 22</td></tr>
+        <tr><th>Amp DIN</th><td>GPIO 27</td></tr>
+        <tr><th>Amp BCLK / LRC</th><td>GPIO 26 / 25</td></tr>
+        <tr><th>Button</th><td>GPIO 32 &rarr; GND</td></tr>
+        <tr><th>Amp VIN</th><td>5V (louder than 3V3)</td></tr>
+      </table>
+    </section>
+  </div>
+
+  <div class="grid">
+    <!-- Flash steps -->
+    <section class="card">
+      <h2>How to flash</h2>
+      <ol>
+        <li>Plug the ESP32 into your computer with a <b>data</b> USB cable.</li>
+        <li>Click <b>Flash Firmware</b> and pick the board's port (e.g. <code>COM5</code>, <code>CP210x</code> or <code>CH340</code>).</li>
+        <li>Click <b>Install</b>. For a first install, keep <b>Erase device</b> ticked.</li>
+        <li>Wait for <b>Installation complete</b> (about 1&ndash;2 minutes), then unplug and replug.</li>
+      </ol>
+    </section>
+
+    <!-- First-time setup -->
+    <section class="card">
+      <h2>After flashing: setup</h2>
+      <ol>
+        <li>On your phone, join Wi-Fi <code>FamApp-Soundbox</code>, password <code>soundbox</code>.</li>
+        <li>The setup page opens (or go to <code>192.168.4.1</code>).</li>
+        <li>Enter your 2.4&nbsp;GHz Wi-Fi, the Gmail linked to FamApp, and a Gmail <b>app password</b>.</li>
+        <li>Save. It restarts and beeps when it's ready.</li>
+      </ol>
+    </section>
+  </div>
+
+  <!-- Warning -->
+  <section class="card warn">
+    <h2>Before you flash</h2>
+    <ul>
+      <li><b>Erase device</b> wipes the saved Wi-Fi and Gmail settings. You'll need to run the setup again.</li>
+      <li>Use the Gmail app password from <code>myaccount.google.com/apppasswords</code>, never your normal password.</li>
+      <li>Close the Arduino IDE Serial Monitor and any other program using the port.</li>
+      <li>For big amounts, always confirm the payment in the FamApp app too.</li>
+    </ul>
+  </section>
+
+  <!-- Using it -->
+  <section class="card">
+    <h2>Using the soundbox</h2>
+    <ul>
+      <li><b>New payment:</b> beep, then "<i>6 rupees received</i>" and the amount on screen.</li>
+      <li><b>Press the button:</b> beep, then it repeats the last payment.</li>
+      <li><b>Hold BOOT for 10&nbsp;s</b> while running: erases all settings and opens setup again.</li>
+    </ul>
+  </section>
+
+  <!-- Troubleshooting -->
+  <section class="card">
+    <h2>Troubleshooting</h2>
+
+    <details>
+      <summary>No port appears in the list</summary>
+      <ul>
+        <li>Try another USB cable. Many cables are charge-only.</li>
+        <li>Install the USB driver for your board's chip:
+          <a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers" target="_blank" rel="noopener" style="color:var(--text)">CP210x</a> or
+          <a href="https://www.wch-ic.com/downloads/CH341SER_EXE.html" target="_blank" rel="noopener" style="color:var(--text)">CH340</a>.</li>
+        <li>Try a different USB port, directly on the computer (no hub).</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>"Failed to connect" or it gets stuck connecting</summary>
+      <ul>
+        <li>Hold the <b>BOOT</b> button, press and release <b>EN/RST</b>, then release BOOT. Click Flash Firmware again.</li>
+        <li>Close the Arduino IDE, Serial Monitor or any app using the port.</li>
+        <li>Unplug the amplifier's VIN while flashing if the board keeps resetting.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>"Failed to download manifest"</summary>
+      <p>The page couldn't load <code>manifest.json</code>. Make sure you opened the GitHub Pages address (not the file on your computer), then hard-refresh with <code>Ctrl + F5</code>.</p>
+    </details>
+
+    <details>
+      <summary>Flashed fine, but it doesn't start</summary>
+      <ul>
+        <li>Press <b>EN/RST</b> once, or unplug and replug.</li>
+        <li>If the screen shows <b>SETUP MODE</b>, the settings were erased: run the setup steps above.</li>
+        <li>Use a strong 5V supply. A weak USB port can make it reset when the speaker plays.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Button says the browser isn't supported</summary>
+      <p>Web flashing uses Web Serial, which only Chrome and Edge (version 89+) support on a computer. Firefox, Safari and phone browsers can't flash.</p>
+    </details>
+  </section>
+
+</main>
+
+<footer>
+  FamApp Soundbox firmware by
+  <a href="https://github.com/Shubhjaiswal408" target="_blank" rel="noopener">Shubhjaiswal408</a>
+  &middot; Flasher powered by <a href="https://esphome.github.io/esp-web-tools/" target="_blank" rel="noopener">ESP Web Tools</a><br>
+  Hobby project. Not affiliated with or endorsed by FamApp or Trio.
+</footer>
+
+</body>
+</html>

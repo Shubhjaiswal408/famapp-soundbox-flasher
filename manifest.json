@@ -1,0 +1,16 @@
+{
+  "name": "FamApp Soundbox",
+  "version": "1.0.0",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        { "path": "firmware/FamApp_Soundbox.bootloader.bin", "offset": "0x1000" },
+        { "path": "firmware/FamApp_Soundbox.partitions.bin", "offset": "0x8000" },
+        { "path": "firmware/boot_app0.bin", "offset": "0xe000" },
+        { "path": "firmware/FamApp_Soundbox.bin", "offset": "0x10000" }
+      ]
+    }
+  ]
+}
