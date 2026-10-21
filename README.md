@@ -1,5 +1,7 @@
 # FamApp Soundbox: Web Flasher
 
+A **techiesms** project · [YouTube](https://www.youtube.com/@techiesms) · [techiesms.com](https://techiesms.com)
+
 Flash the FamApp Soundbox firmware to a classic **ESP32** straight from Chrome or Edge, using [ESP Web Tools](https://esphome.github.io/esp-web-tools/). No Arduino IDE or drivers needed on most computers.
 
 **Flasher page:** https://shubhjaiswal408.github.io/famapp-soundbox-flasher/

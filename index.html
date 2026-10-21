@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FamApp Soundbox Flasher</title>
-<meta name="description" content="Flash the FamApp Soundbox firmware to an ESP32 straight from your browser.">
+<title>FamApp Soundbox Flasher | techiesms</title>
+<meta name="description" content="Flash the techiesms FamApp Soundbox firmware to an ESP32 straight from your browser.">
 <meta name="color-scheme" content="dark">
 
 <!-- ESP Web Tools (pinned version) -->
@@ -17,8 +17,8 @@
     --line: #262d36;
     --text: #e6edf3;
     --muted: #9aa5b1;
-    --accent: #2f81f7;
-    --accent-2: #6e56cf;
+    --accent: #00b4d8;
+    --accent-2: #0077b6;
     --ok: #3fb950;
     --warn: #d29922;
     --radius: 12px;
@@ -36,6 +36,13 @@
   main { max-width: 880px; margin: 0 auto; padding: 48px 16px 32px; }
 
   header { text-align: center; margin-bottom: 32px; }
+  .brand {
+    display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px;
+    color: var(--text); text-decoration: none; font-weight: 650; font-size: 18px; letter-spacing: .2px;
+  }
+  .brand svg { width: 30px; height: 30px; }
+  .brand .word { font-weight: 650; }
+  .brand .word span { color: var(--accent); }
   .badge {
     display: inline-block; padding: 2px 10px; border: 1px solid var(--line);
     border-radius: 999px; color: var(--muted); font-size: 13px;
@@ -61,12 +68,12 @@
     padding: 14px 32px; border-radius: 10px;
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
     color: #fff; font: 600 17px/1 inherit; letter-spacing: .2px;
-    box-shadow: 0 4px 14px rgba(47, 129, 247, .25);
+    box-shadow: 0 4px 14px rgba(0, 180, 216, .25);
     transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
   }
   esp-web-install-button button[slot="activate"]:hover {
     transform: translateY(-1px); filter: brightness(1.08);
-    box-shadow: 0 6px 18px rgba(47, 129, 247, .32);
+    box-shadow: 0 6px 18px rgba(0, 180, 216, .32);
   }
   esp-web-install-button button[slot="activate"]:active { transform: translateY(0); }
   esp-web-install-button button[slot="activate"]:focus-visible {
@@ -121,6 +128,16 @@
 <main>
 
   <header>
+    <a class="brand" href="https://www.youtube.com/@techiesms" target="_blank" rel="noopener" aria-label="techiesms on YouTube">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <g stroke="#00b4d8" stroke-width="2" stroke-linecap="round">
+          <path d="M11 3v4M16 3v4M21 3v4M11 25v4M16 25v4M21 25v4M3 11h4M3 16h4M3 21h4M25 11h4M25 16h4M25 21h4"/>
+        </g>
+        <rect x="7" y="7" width="18" height="18" rx="3" fill="#00b4d8"/>
+        <rect x="12" y="12" width="8" height="8" rx="1.5" fill="#0d1117"/>
+      </svg>
+      <b class="word">techies<span>ms</span></b>
+    </a><br>
     <span class="badge">Firmware v1.0.0 &middot; ESP32</span>
     <h1>FamApp Soundbox</h1>
     <p class="subtitle">
@@ -262,9 +279,11 @@
 </main>
 
 <footer>
-  FamApp Soundbox firmware by
-  <a href="https://github.com/Shubhjaiswal408" target="_blank" rel="noopener">Shubhjaiswal408</a>
-  &middot; Flasher powered by <a href="https://esphome.github.io/esp-web-tools/" target="_blank" rel="noopener">ESP Web Tools</a><br>
+  Made by <a href="https://www.youtube.com/@techiesms" target="_blank" rel="noopener">techiesms</a>
+  &middot; <a href="https://www.youtube.com/@techiesms" target="_blank" rel="noopener">YouTube</a>
+  &middot; <a href="https://techiesms.com" target="_blank" rel="noopener">techiesms.com</a>
+  &middot; <a href="https://github.com/Shubhjaiswal408/famapp-soundbox-flasher" target="_blank" rel="noopener">GitHub</a><br>
+  Flasher powered by <a href="https://esphome.github.io/esp-web-tools/" target="_blank" rel="noopener">ESP Web Tools</a><br>
   Hobby project. Not affiliated with or endorsed by FamApp or Trio.
 </footer>
 
