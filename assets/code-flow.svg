@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="t d" font-family="Segoe UI, system-ui, -apple-system, Roboto, sans-serif">
+  <title id="t">Inside the FamApp Soundbox code</title>
+  <desc id="d">At start-up the code loads settings or opens the setup hotspot, joins Wi-Fi, sets the clock, logs in to Gmail and remembers the newest email. Then core 0 polls Gmail and hands payments to core 1, which beeps, shows and speaks them and handles the buttons.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#5b6472"/>
+    </marker>
+  </defs>
+  <rect width="960" height="600" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="22" font-weight="600" fill="#111827">Inside the code</text>
+  <text x="32" y="70" font-size="14" fill="#5b6472">FAMAPP_SOUNDBOX_PORTAL_FAST.ino — function names in brackets</text>
+
+  <!-- START-UP -->
+  <text x="32" y="112" font-size="13" font-weight="600" fill="#5b6472" letter-spacing="1">START-UP  (setup)</text>
+  <g font-size="13" text-anchor="middle">
+    <rect x="32"  y="124" width="150" height="64" rx="10" fill="#f3f4f6" stroke="#9ca3af"/>
+    <text x="107" y="150" font-weight="600" fill="#111827">Settings saved?</text>
+    <text x="107" y="170" fill="#4b5563">(loadConfig)</text>
+
+    <rect x="214" y="124" width="140" height="64" rx="10" fill="#f3f4f6" stroke="#9ca3af"/>
+    <text x="284" y="150" font-weight="600" fill="#111827">Join Wi-Fi</text>
+    <text x="284" y="170" fill="#4b5563">(connectWiFi)</text>
+
+    <rect x="386" y="124" width="140" height="64" rx="10" fill="#f3f4f6" stroke="#9ca3af"/>
+    <text x="456" y="150" font-weight="600" fill="#111827">Set clock</text>
+    <text x="456" y="170" fill="#4b5563">NTP (saves ~10 s)</text>
+
+    <rect x="558" y="124" width="160" height="64" rx="10" fill="#f3f4f6" stroke="#9ca3af"/>
+    <text x="638" y="150" font-weight="600" fill="#111827">Gmail login</text>
+    <text x="638" y="170" fill="#4b5563">+ remember newest</text>
+
+    <rect x="750" y="124" width="178" height="64" rx="10" fill="#f3f4f6" stroke="#9ca3af"/>
+    <text x="839" y="150" font-weight="600" fill="#111827">Beep = ready</text>
+    <text x="839" y="170" fill="#4b5563">start the 2 loops</text>
+  </g>
+  <g stroke="#5b6472" stroke-width="2" marker-end="url(#a)">
+    <line x1="182" y1="156" x2="210" y2="156"/>
+    <line x1="354" y1="156" x2="382" y2="156"/>
+    <line x1="526" y1="156" x2="554" y2="156"/>
+    <line x1="718" y1="156" x2="746" y2="156"/>
+  </g>
+  <!-- no settings -> portal -->
+  <path d="M107 188 L107 222" stroke="#d97706" stroke-width="2" marker-end="url(#a)"/>
+  <text x="116" y="210" font-size="12" fill="#b45309">no</text>
+  <rect x="32" y="226" width="300" height="44" rx="10" fill="#fff7e6" stroke="#d97706"/>
+  <text x="182" y="253" font-size="13" text-anchor="middle" fill="#7c4a03">Setup hotspot "FamApp-Soundbox" (runPortal)</text>
+
+  <!-- CORE 0 -->
+  <text x="32" y="320" font-size="13" font-weight="600" fill="#5b6472" letter-spacing="1">CORE 0 — GMAIL TASK  (gmailTask)</text>
+  <rect x="32" y="332" width="420" height="236" rx="12" fill="#f3f0ff" stroke="#7c6cd6"/>
+  <g font-size="13" fill="#3b2f87">
+    <text x="52" y="364" font-weight="600">Every ~1 second (pollGmail):</text>
+    <text x="52" y="392">1. Ask: "emails newer than the last one?"</text>
+    <text x="52" y="416">2. Decode the subject (decodeMimeHeader)</text>
+    <text x="52" y="440">3. Sender must be @famapp.in (isFromFamApp)</text>
+    <text x="52" y="464">4. Read the amount, e.g. ₹1,500 → 1500 (parseAmount)</text>
+    <text x="52" y="488">5. Put the amount in the queue → core 1</text>
+    <text x="52" y="524" fill="#5a4fa8">Connection lost? Reconnect every 10 s</text>
+    <text x="52" y="546" fill="#5a4fa8">and catch up on missed emails (reconnectGmail)</text>
+  </g>
+
+  <!-- queue arrow -->
+  <line x1="452" y1="450" x2="504" y2="450" stroke="#5b6472" stroke-width="2" marker-end="url(#a)"/>
+  <text x="478" y="440" font-size="12" fill="#5b6472" text-anchor="middle">queue</text>
+
+  <!-- CORE 1 -->
+  <text x="508" y="320" font-size="13" font-weight="600" fill="#5b6472" letter-spacing="1">CORE 1 — MAIN LOOP  (loop)</text>
+  <rect x="508" y="332" width="420" height="236" rx="12" fill="#ecfdf3" stroke="#3fb950"/>
+  <g font-size="13" fill="#14532d">
+    <text x="528" y="364" font-weight="600">New payment in the queue (announcePayment):</text>
+    <text x="528" y="392">beep → OLED "Rs.1500.00" → "1500 rupees received"</text>
+    <text x="528" y="416">→ save as last payment</text>
+    <text x="528" y="452" font-weight="600">Button on GPIO 32 (repeatLastPayment):</text>
+    <text x="528" y="476">beep → "Last payment, 1500 rupees"</text>
+    <text x="528" y="512" font-weight="600">BOOT held 10 s (checkFactoryReset):</text>
+    <text x="528" y="536">erase settings → restart into setup</text>
+  </g>
+</svg>

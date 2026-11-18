@@ -8,6 +8,16 @@ Flash the FamApp Soundbox firmware to a classic **ESP32** straight from Chrome o
 
 > Hobby project. Not affiliated with or endorsed by FamApp or Trio.
 
+**Source code:** [`source/FamApp_Soundbox/FamApp_Soundbox.ino`](source/FamApp_Soundbox/FamApp_Soundbox.ino) · see [Source code & customising](#source-code--customising)
+
+---
+
+## How it works
+
+![How it works](assets/how-it-works.svg)
+
+![Inside the code](assets/code-flow.svg)
+
 ---
 
 ## 1. What's in this repository
@@ -18,6 +28,10 @@ famapp-soundbox-flasher/
 ├── manifest.json                      ← tells ESP Web Tools which files go where
 ├── .nojekyll                          ← stops GitHub Pages from processing files
 ├── README.md                          ← this guide
+├── assets/                            ← diagrams + logo
+├── source/
+│   └── FamApp_Soundbox/
+│       └── FamApp_Soundbox.ino        ← Arduino source of this firmware
 └── firmware/
     ├── FamApp_Soundbox.bootloader.bin   → 0x1000
     ├── FamApp_Soundbox.partitions.bin   → 0x8000
@@ -219,3 +233,47 @@ Replace `COM5` with your port (`/dev/ttyUSB0` on Linux, `/dev/cu.usbserial-*` on
 - Opening `index.html` from your computer instead of the https Pages URL.
 - Charge-only USB cables.
 - Leaving the Serial Monitor open while flashing.
+
+---
+
+## Source code & customising
+
+The firmware in `firmware/` is built from [`source/FamApp_Soundbox/FamApp_Soundbox.ino`](source/FamApp_Soundbox/FamApp_Soundbox.ino). It's a single sketch file.
+
+### Build it yourself
+
+| Setting | Value |
+|---|---|
+| Arduino core | **esp32 by Espressif 3.1.2** (newer cores have not been tested) |
+| Board | **ESP32 Dev Module** |
+| Partition Scheme | **Huge APP (3MB No OTA/1MB SPIFFS)**. It doesn't fit without this |
+
+| Library (Library Manager name) | Version |
+|---|---|
+| ESP Mail Client (by Mobizt) | **3.4.24** |
+| ESP32-audioI2S (by schreibfaul1) | **3.0.13**. Newer versions don't build on core 3.1.2 |
+| Adafruit SSD1306 | 2.5.17 |
+| Adafruit GFX Library | 1.12.6 |
+| Adafruit BusIO | 1.17.4 |
+
+`WiFi`, `WebServer`, `DNSServer`, `Preferences` and `ESP_I2S` come with the ESP32 core.
+
+Open the `FamApp_Soundbox` folder in the Arduino IDE, select the settings above and click **Upload**. Your saved Wi-Fi/Gmail settings stay on the board after an upload.
+
+> No passwords are in the code. Wi-Fi, Gmail and the app password are entered on the box's own setup page and stored in its flash.
+
+### Common changes
+
+| You want to… | Change this in the `.ino` |
+|---|---|
+| **Speak in Hindi** | Uncomment `//#define ANNOUNCE_HINDI` (near the top). The voice language switches with it |
+| **Change the spoken sentence** | `buildSpeech()` (payments) and `buildLastPaymentSpeech()` (button) |
+| **Change the home screen text** | `oledHome()`: the `"FamApp Soundbox"` and `"Waiting for payment"` lines |
+| **Change the payment screen title** | `oledAmount()`: the default label `"PAYMENT RECEIVED"` |
+| **Louder / softer voice** | `AUDIO_VOLUME` (0–21) and `audio.setTone(3, 6, 3)` in `setup()` (lower if it distorts) |
+| **Louder / softer beep** | `BEEP_AMPLITUDE` (default 14000, max 32767) |
+| **Different button pin** | `BUTTON_PIN` (default GPIO 32, wired to GND) |
+| **Check Gmail more or less often** | `POLL_GAP` in ms (default 1000) |
+| **See timing of every step** | Uncomment `//#define TIMING_DEBUG` and open the Serial Monitor at 115200 |
+
+The Google voice reads digits by itself, so any language Google Translate speaks works: set `TTS_LANG` (e.g. `"ta"` Tamil, `"te"` Telugu, `"mr"` Marathi) and translate the sentence in `buildSpeech()`.

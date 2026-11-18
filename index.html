@@ -87,6 +87,8 @@
     transition: border-color .15s ease, background .15s ease;
   }
   .btn-secondary:hover { border-color: var(--accent); background: #1c2330; }
+  .links { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .diagram { display: block; width: 100%; height: auto; border-radius: 10px; margin-top: 4px; }
 
   /* ---- Grid of info cards ---- */
   .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-bottom: 16px; }
@@ -146,7 +148,10 @@
       </span>
     </esp-web-install-button>
     <p class="muted">Connect the ESP32 with a USB data cable first. Works in Chrome and Edge on Windows, macOS, Linux and ChromeOS.</p>
-    <a class="btn-secondary" href="https://github.com/Shubhjaiswal408/famapp-soundbox-flasher#readme" target="_blank" rel="noopener">Read the full guide</a>
+    <div class="links">
+      <a class="btn-secondary" href="https://github.com/Shubhjaiswal408/famapp-soundbox-flasher#readme" target="_blank" rel="noopener">Read the full guide</a>
+      <a class="btn-secondary" href="https://github.com/Shubhjaiswal408/famapp-soundbox-flasher/blob/main/source/FamApp_Soundbox/FamApp_Soundbox.ino" target="_blank" rel="noopener">Source code</a>
+    </div>
   </section>
 
   <div class="grid">
@@ -174,6 +179,16 @@
       </table>
     </section>
   </div>
+
+  <!-- How it works -->
+  <section class="card">
+    <h2>How it works</h2>
+    <img class="diagram" src="assets/how-it-works.svg" alt="FamApp payment, then email in Gmail, then the ESP32 checks Gmail every second, then the OLED shows the amount and the speaker says it" loading="lazy" width="960" height="360">
+    <details style="margin-top:12px">
+      <summary>Inside the code</summary>
+      <img class="diagram" src="assets/code-flow.svg" alt="Start-up steps, then a Gmail task on core 0 that finds payments and a main loop on core 1 that beeps, shows and speaks them" loading="lazy" width="960" height="600" style="margin-top:12px">
+    </details>
+  </section>
 
   <div class="grid">
     <!-- Flash steps -->
